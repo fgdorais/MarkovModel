@@ -1,5 +1,4 @@
-from __future__ import unicode_literals # Python 2/3 compatibility #
-from codecs import open, getreader      # Python 2/3 compatibility #
+import codecs
 import unicodedata
 
 class TokenParser:
@@ -11,7 +10,7 @@ class TokenParser:
     """
 
     def __init__(self, stream):
-        self.stream = getreader('utf-8')(stream) # Python 2/3 compatibility #
+        self.stream = codecs.getreader('utf-8')(stream) # Python 2/3 compatibility #
         self.tokens = []
 
     def __iter__(self):
