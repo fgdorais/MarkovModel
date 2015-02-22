@@ -62,7 +62,7 @@ def read_matrix(filename, tokens=None, sorted=False):
     """Read transition matrix from file"""
     
     with csvopen(filename, 'r') as datafile:
-        if tokens:
+        if tokens is not None:
             datareader = csv.DictReader(datafile, dialect='markov',
                                         fieldnames=[encode(x) for x in tokens])
         else:
@@ -85,7 +85,7 @@ def write_matrix(filename, model, tokens=None):
     """Write transition matrix to file"""
     
     with csvopen(filename, 'w') as datafile:
-        if not tokens:
+        if tokens is None:
             tokens = [encode(tok) for tok, prb in model[u'']]
             header = False
         else:
