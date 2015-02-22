@@ -23,7 +23,7 @@ elif sys.version_info[0] == 2:
 
 # By default, tabs are used as delimiters since other characters are
 # likely to occur in tokens from natural languages.
-    
+
 csv.register_dialect('markov',
                      delimiter='\t',
                      doublequote=True,
@@ -32,8 +32,8 @@ csv.register_dialect('markov',
                      strict=False)
 
 # Sparse model I/O
-    
-def read_sparse(filename):
+
+def read_sparse(filename, sorted=False):
     """Read sparse model from file"""
     
     model = {}
@@ -41,6 +41,8 @@ def read_sparse(filename):
         datareader = csv.reader(datafile, dialect='markov')
         for row in datareader:
             model[decode(row[0])] = [(decode(row[i]),row[i+1]) for i in range(1,len(row),2)]
+        if sorted:
+            model[decode(row[0])].sort(key=lambda x: x[1], reverse=True)
     return model
 
 def write_sparse(filename, model):
@@ -53,10 +55,10 @@ def write_sparse(filename, model):
             for tok, prb in model[ctx]:
                 row += [encode(tok), prb]
             datawriter.writerow(row)
-                
+
 # Matrix model I/O
 
-def read_matrix(filename, tokens=None):
+def read_matrix(filename, tokens=None, sorted=False):
     """Read transition matrix from file"""
     
     with csvopen(filename, 'r') as datafile:
@@ -66,10 +68,17 @@ def read_matrix(filename, tokens=None):
         else:
             datareader = csv.DictReader(datafile, dialect='markov')
             tokens = [decode(x) for x in datareader.fieldnames]
-        model = {}
+
+        # set empty context with uniform distribution
+        model = {u'' : [(tok,1.0/len(tokens)) for tok in tokens]}
+
+        # read single token contexts from transition matrix
         for ctx in tokens:
             row = next(datareader)
+            # omit zero entries
             model[ctx] = [(decode(tok),row[tok]) for tok in row if row[tok] > 0.0]
+            if sorted:
+                model[ctx].sort(key=lambda x: x[1], reverse=True)
         return model
 
 def write_matrix(filename, model, tokens=None):
@@ -77,7 +86,7 @@ def write_matrix(filename, model, tokens=None):
     
     with csvopen(filename, 'w') as datafile:
         if not tokens:
-            tokens = [encode(tok) for tok, prb in model[decode('')]]
+            tokens = [encode(tok) for tok, prb in model[u'']]
             header = False
         else:
             header = True
@@ -85,6 +94,7 @@ def write_matrix(filename, model, tokens=None):
         if header:
             datawriter.writeheader()
         for ctx in tokens:
-            row = model.get(decode(ctx),[])
+            # default to empty context if ctx is not present in model
+            row = model.get(decode(ctx), model[u''])
             datawriter.writerow(dict((encode(tok),prb) for tok, prb in row))
 
