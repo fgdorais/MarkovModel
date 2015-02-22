@@ -77,14 +77,14 @@ def write_matrix(filename, model, tokens=None):
     
     with csvopen(filename, 'w') as datafile:
         if not tokens:
-            tokens = [encode(tok) for tok in model[decode('')]]
+            tokens = [encode(tok) for tok, prb in model[decode('')]]
             header = False
         else:
             header = True
         datawriter = csv.DictWriter(datafile, tokens, restval=0.0, dialect='markov')
         if header:
             datawriter.writeheader()
-        for tok in tokens:
-            row = model.get(decode(tok),[])
-            datawriter.writerow(dict((encode(tok),row[tok]) for tok in row))
+        for ctx in tokens:
+            row = model.get(decode(ctx),[])
+            datawriter.writerow(dict((encode(tok),prb) for tok, prb in row))
 

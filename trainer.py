@@ -40,7 +40,5 @@ class MarkovTrainer:
         model = {}
         for ctx in self.tdata:
             total = sum(self.tdata[ctx].values())
-            model[ctx] = []
-            for tok in self.tdata[ctx]:
-                model[ctx].append((tok, float(self.tdata[ctx][tok])/total))
+            model[ctx] = sorted([(tok,float(self.tdata[ctx][tok])/total) for tok in self.tdata[ctx]], key=lambda x: x[1], reverse=True)
         return model
