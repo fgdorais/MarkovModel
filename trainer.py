@@ -1,7 +1,5 @@
 from __future__ import unicode_literals # Python 2/3 compatibility #
 
-from parser import TokenParser
-
 class MarkovTrainer:
     
     def __init__(self, depth=3):
@@ -13,10 +11,10 @@ class MarkovTrainer:
         """Clear the list of remembered tokens"""
         self.thist = []
     
-    def train(self, stream):
+    def train(self, tokens):
         """Train Markov model using text data from stream"""
         
-        for tok in TokenParser(stream):
+        for tok in tokens:
             
             # First, deal with the empty context
             self.tdata[''][tok] = self.tdata[''].get(tok, 0) + 1

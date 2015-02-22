@@ -5,6 +5,7 @@ import sys
 import argparse
 
 import modelio
+from parser import TokenParser
 from trainer import MarkovTrainer
 from generator import MarkovGenerator
 
@@ -27,7 +28,7 @@ def train(args):
     Trainer = MarkovTrainer(args.depth[0])
     
     for data in args.text:
-        Trainer.train(data)
+        Trainer.train(TokenParser(data))
     
     if args.matrix:
         modelio.write_matrix(args.model[0], Trainer.model())
