@@ -14,10 +14,8 @@ subparsers = parser.add_subparsers(help='sub-command help')
 # 'train' command parser
 train_parser = subparsers.add_parser('train', help='train model using text data')
 train_parser.add_argument('model', help='output model', nargs=1)
-train_parser.add_argument('text', help='training data', nargs='*',
-                          type=argparse.FileType('r'), default=sys.stdin)
-train_parser.add_argument('-d', '--depth', help='memory depth',
-                          nargs=1, type=int, default=[1])
+train_parser.add_argument('text', help='training data', nargs='*', type=argparse.FileType('r'), default=sys.stdin)
+train_parser.add_argument('-d', '--depth', help='memory depth', nargs=1, type=int, default=[1])
 train_parser.add_argument('--matrix', help='matrix format', action="store_true")
 
 def train(args):
@@ -42,8 +40,7 @@ train_parser.set_defaults(func=train)
 random_parser = subparsers.add_parser('random', help='generate random text using model')
 random_parser.add_argument('model', help='input model', nargs=1)
 random_parser.add_argument('count', help='token count', nargs='?', type=int, default=100)
-random_parser.add_argument('-d', '--depth', help='memory depth',
-                           nargs=1, type=int, default=[1])
+random_parser.add_argument('-d', '--depth', help='memory depth', nargs=1, type=int, default=[1])
 random_parser.add_argument('--matrix', help='matrix format', action="store_true")
 
 def random(args):
@@ -56,8 +53,7 @@ def random(args):
     
     if args.matrix:
         model = modelio.read_matrix(args.model[0])
-        model[''] = [(tok,1.0/len(model)) for tok in model]
-        args.depth[0] = 1
+        args.depth[0] = 1 # Force depth 1 for matrix format
     else:
         model = modelio.read_sparse(args.model[0])
     
